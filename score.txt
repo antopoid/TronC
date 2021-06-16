@@ -1,0 +1,10 @@
+antoine 1421
+paul 400
+matthieu 300
+euge 200
+rayan 100
+antoine 50
+antoine 22
+antoine 20
+antoine 13
+antoine 9
