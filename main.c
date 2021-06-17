@@ -10,9 +10,10 @@ static Uint32 colors_rgb[4];
 //Definie un tableau des dimensions de l'ecran pour y inscrire chaque couleur de chaque pixels
 static char point[1280][720];
 //Variables player 1                      //Variables player 2                  //Variables score                   //variables menu              
-static int x=140, y=90, dx=1, dy=0, pts=0, x1=160, y1=90, dx1=1, dy1=0, pts1=0, tempsActuel = 0, tempsPrecedent = 0, pointeur = 0, tour=0, check = 0, winner = 0;
+static int x=140, y=90, dx=1, dy=0, pts=0, x1=160, y1=90, dx1=1, dy1=0, pts1=0, tempsActuel = 0, tempsPrecedent = 0, pointeur = 0, tour=0, check = 0, winner = 0, inser=0;
 static char score[80] = {""}; /* Tableau de char suffisamment grand */ 
 static char strn[80] = {""}; /* Tableau de char suffisamment grand */ 
+static char chaine[80] = {""};
 
 
 //Variable pour police SDL_tff
@@ -76,10 +77,10 @@ void draw_score (int pts) {
 }
 
 //fonction pour afficher score fianl sous forme de popup
-void draw_score_final (int pts) {
+void draw_score_final (Liste *liste, int pts) {
     SDL_EnableUNICODE(SDL_ENABLE);
     int i=0, j=0;
-    char chaine[80] = {""};
+    memset(chaine, 0, 80);
     SDL_Color couleurCyan = {120, 239, 252};
     SDL_Color couleurNoir = {0, 0, 0};
     //Definie le fond en noir 
@@ -90,11 +91,10 @@ void draw_score_final (int pts) {
     for (j=150; j<=200; ++j) { pset(170, j, 3); pset(470, j, 3); }  
     
     SDL_Rect position;
-            position.x = 700;
+            position.x = 670;
             position.y = 328;
 
             sprintf(score, "Score : %d", pts); /* On écrit dans la chaîne le nouveau score */
-            //SDL_FreeSurface(texte); /* On supprime la surface précédente de la mémoire avant d'en charger une nouvelle (IMPORTANT) */
             texte = TTF_RenderText_Shaded(police, score, couleurCyan, couleurNoir); /* On écrit la chaine temps dans la SDL_Surface */
 
     SDL_BlitSurface(texte, NULL, screen, &position); // Blit du texte 
@@ -104,19 +104,11 @@ void draw_score_final (int pts) {
  
     SDL_WaitEvent(&event);
     
-    if(event.key.keysym.unicode >= 'a' && event.key.keysym.unicode <= 'z') {
-        chaine[i] = event.key.keysym.unicode;
-        i++;
-        printf("ok\n");
-    }
-    else if(event.key.keysym.unicode >= 'A' && event.key.keysym.unicode <= 'Z') {
-        chaine[i] = event.key.keysym.unicode;
-        i++;
-        printf("ok\n");
-    }
-    else if(event.key.keysym.sym == SDLK_RETURN) {
-        break;
-    }
+    if(event.key.keysym.unicode >= 'a' && event.key.keysym.unicode <= 'z') {strcat(chaine,SDL_GetKeyName(event.key.keysym.unicode));i++;}
+    else if(event.key.keysym.unicode >= 'A' && event.key.keysym.unicode <= 'Z') {strcat(chaine,SDL_GetKeyName(event.key.keysym.unicode));i++;}
+    else if(event.key.keysym.sym == SDLK_RETURN) {inser=1;break;}
+    else if(event.key.keysym.sym == SDLK_ESCAPE) {inser=1;break;}
+    else if(event.key.keysym.sym == SDL_QUIT) {inser=1;break;}
     texte = TTF_RenderText_Blended(police, chaine, couleurCyan);
     SDL_Rect position;
     position.x = 360;
@@ -126,7 +118,6 @@ void draw_score_final (int pts) {
     update_screen();
   }
     SDL_EnableUNICODE(SDL_DISABLE);
-    //free(texte);
 }
 
 //fonction declenché sur un pixel vert
@@ -143,14 +134,8 @@ void contour (int Affscore) {
     //Definie le fond en noir 
     for (i=0; i<=640; ++i) for (j=0; j<=360; ++j) pset(i, j, 0);
     //Barre superieur et inferieur 
-    if(Affscore==1)
-    {
-       for (i=0; i<=640; ++i) { pset(i, 0, 3); pset(i, 320, 3); pset(i, 359, 3); }
-    }
-    if(Affscore==0)
-    {
-       for (i=0; i<=640; ++i) { pset(i, 0, 3); pset(i, 359, 3); }
-    }   
+    if(Affscore==1){for (i=0; i<=640; ++i) { pset(i, 0, 3); pset(i, 320, 3); pset(i, 359, 3); }}
+    if(Affscore==0){for (i=0; i<=640; ++i) { pset(i, 0, 3); pset(i, 359, 3); }}   
     //Barre gauche et droite 
     for (j=0; j<=360; ++j) { pset(0, j, 3); pset(639, j, 3); }
 }
@@ -201,46 +186,58 @@ MENU:
       contour(0);     //Definie les contour pour l'affichage sans score 
       while (get_event()) {}  // empty the event queue
       while (1) {
-      if(pointeur>3)pointeur=0;
-      if(pointeur<0)pointeur=3;
+      if(pointeur>4)pointeur=0;
+      if(pointeur<0)pointeur=4;
 tour=1;
 while(tour>0){
         //printf("%d\n", pointeur );
 if(pointeur==0){  
                sprintf(strn, "Bienvenue dans TRONC"); draw_text(60,10,55,strn,1); 
                sprintf(strn, "Multiplayer 1 vs 1"); draw_text(60,230,25,strn,2);           
-               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,330,25,strn,1);
-               sprintf(strn, "Scores"); draw_text(60,430,25,strn,1);
-               sprintf(strn, "Quitter"); draw_text(60,530,25,strn,1);
+               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,310,25,strn,1);
+               sprintf(strn, "Scores"); draw_text(60,400,25,strn,1);
+               sprintf(strn, "Settings"); draw_text(60,480,25,strn,1);
+               sprintf(strn, "Exit"); draw_text(60,560,25,strn,1);
                }
 
 if(pointeur==1){ 
                sprintf(strn, "Bienvenue dans TRONC"); draw_text(60,10,55,strn,1); 
                sprintf(strn, "Multiplayer 1 vs 1"); draw_text(60,230,25,strn,1);           
-               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,330,25,strn,2);
-               sprintf(strn, "Scores"); draw_text(60,430,25,strn,1);
-               sprintf(strn, "Quitter"); draw_text(60,530,25,strn,1);
+               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,310,25,strn,2);
+               sprintf(strn, "Scores"); draw_text(60,400,25,strn,1);
+               sprintf(strn, "Settings"); draw_text(60,480,25,strn,1);
+               sprintf(strn, "Exit"); draw_text(60,560,25,strn,1);
                }
 
 if(pointeur==2){ 
                sprintf(strn, "Bienvenue dans TRONC"); draw_text(60,10,55,strn,1); 
                sprintf(strn, "Multiplayer 1 vs 1"); draw_text(60,230,25,strn,1);           
-               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,330,25,strn,1);
-               sprintf(strn, "Scores"); draw_text(60,430,25,strn,2);
-               sprintf(strn, "Quitter"); draw_text(60,530,25,strn,1);
+               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,310,25,strn,1);
+               sprintf(strn, "Scores"); draw_text(60,400,25,strn,2);
+               sprintf(strn, "Settings"); draw_text(60,480,25,strn,1);
+               sprintf(strn, "Exit"); draw_text(60,560,25,strn,1);
                }
 
 if(pointeur==3){ 
                sprintf(strn, "Bienvenue dans TRONC"); draw_text(60,10,55,strn,1); 
                sprintf(strn, "Multiplayer 1 vs 1"); draw_text(60,230,25,strn,1);           
-               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,330,25,strn,1);
-               sprintf(strn, "Scores"); draw_text(60,430,25,strn,1);
-               sprintf(strn, "Quitter"); draw_text(60,530,25,strn,2);
+               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,310,25,strn,1);
+               sprintf(strn, "Scores"); draw_text(60,400,25,strn,1);
+               sprintf(strn, "Settings"); draw_text(60,480,25,strn,2);
+               sprintf(strn, "Exit"); draw_text(60,560,25,strn,1);
+              }
+
+if(pointeur==4){ 
+               sprintf(strn, "Bienvenue dans TRONC"); draw_text(60,10,55,strn,1); 
+               sprintf(strn, "Multiplayer 1 vs 1"); draw_text(60,230,25,strn,1);           
+               sprintf(strn, "Soloplayer 1 vs IA"); draw_text(60,310,25,strn,1);
+               sprintf(strn, "Scores"); draw_text(60,400,25,strn,1);
+               sprintf(strn, "Settings"); draw_text(60,480,25,strn,1);
+               sprintf(strn, "Exit"); draw_text(60,560,25,strn,2);
               }
 tour=0;
 }   
 
-      //SDL_Delay(10);
   switch (get_event()) {
     case SDLK_UP: pointeur --; tour++; goto MENU;
     case SDLK_DOWN: pointeur ++; tour++; goto MENU;
@@ -248,6 +245,8 @@ tour=0;
     case SDLK_RETURN: if (pointeur==0)goto NEWGAME_MULTIPLAYER;
                       if (pointeur==1)goto NEWGAME_SOLOPLAYER;
                       if (pointeur==2)goto SCORES;
+                      if (pointeur==2)goto SETTINGS;
+                      if (pointeur==4)goto CLOSE;
                       break;
     //case SDLK_SPACE: 
         case SDLK_ESCAPE: goto CLOSE;
@@ -255,8 +254,10 @@ tour=0;
       }
     //Rafraichie écran
     update_screen();
-    SDL_Delay(50);
+    //SDL_Delay(20);
     }
+
+SETTINGS:
 
 SCORES:
     
@@ -265,7 +266,7 @@ SCORES:
     Element *actuel = maListe->premier;
     contour(0); //dessine les contours sans afficher le score
     int height=220;
-    int nbScore=0;
+    int nbScore=1;
 
 while (get_event()) {}  // empty the event queue
 while (1) 
@@ -275,9 +276,9 @@ sprintf(strn, "Meilleurs Scores"); draw_text(300,100,40,strn,1);
     //insertion(maListe,name, score);
 
 
-    while (actuel != NULL && nbScore<=5)
+    while (actuel != NULL && nbScore<=6)
     {
-        sprintf(strn, "%s : %d",actuel->nom, actuel->nombre); draw_text(425,height,30,strn,1);
+        sprintf(strn, "%d : %s -> %d",nbScore,actuel->nom, actuel->nombre); draw_text(405,height,30,strn,1);
         actuel = actuel->suivant;
         height=height+100;
         nbScore ++;
@@ -315,9 +316,8 @@ NEWGAME_SOLOPLAYER:
     goto WALK_SOLOPLAYER;
 
 WALK_SOLOPLAYER:
-   SDL_Delay(10);
-   check=0;
 
+      check=0;
       switch (get_event()) {
       //Control Player 1
       case SDLK_UP:   dx=0; dy=-1; break;
@@ -418,26 +418,10 @@ WALK_SOLOPLAYER:
     x1=x1+dx1; y1=y1+dy1;
 
     //If players cross red or green lines
-    if (point[x][y] == 3)
-    {
-      winner=2;
-      goto END_SOLOPLAYER;
-    } 
-    if (point[x][y] == 2) 
-    {
-      winner=2;
-      goto END_SOLOPLAYER;
-    } 
-    if (point[x1][y1] == 3) 
-    {
-      winner=1;
-      goto END_SOLOPLAYER;
-    } 
-    if (point[x1][y1] == 2) 
-    {
-      winner=1;
-      goto END_SOLOPLAYER;
-    } 
+    if (point[x][y] == 3){winner=2; goto END_SOLOPLAYER;    } 
+    if (point[x][y] == 2) {winner=2; goto END_SOLOPLAYER;} 
+    if (point[x1][y1] == 3) {winner=1; goto END_SOLOPLAYER;} 
+    if (point[x1][y1] == 2) {winner=1; goto END_SOLOPLAYER;} 
         //If player one hit green pixel
     if (point[x][y] == 1) hit_green_pixel();
     if (point[x1][y1] == 1) hit_green_pixel();
@@ -447,31 +431,25 @@ WALK_SOLOPLAYER:
     pset(x, y, 3);
     pset(x1, y1, 2);
     update_screen();
+    SDL_Delay(4);
  
     goto WALK_SOLOPLAYER;
 
 
 NEWGAME_MULTIPLAYER:
-    //Definie les contour pour l'affichage du score 
-    contour(1);
-    //Spwan player 1
-    x=330; y=180; dx=1; dy=0; pts=0;
+    contour(1);//Definie les contour pour l'affichage du score 
+    x=330; y=180; dx=1; dy=0; pts=0;    //Spwan player 1
     pset(x, y, 3);
-    //Spawn player 2 
-    x1=310; y1=180; dx1=-1; dy1=0; pts1=0;
+    x1=310; y1=180; dx1=-1; dy1=0; pts1=0;    //Spawn player 2 
     pset(x1, y1, 2); 
-    draw_green_square();
-    //Rafraichie écran
-    update_screen();
-    SDL_Delay(100);
-    //Met la police en petit pour le score 
-    police = TTF_OpenFont("./TRON.ttf", 25);
+    draw_green_square(); //Draw breen square
+    update_screen();     //Refresh screen
+    SDL_Delay(100); //Add delay
+    police = TTF_OpenFont("./TRON.ttf", 25);    //Change policy to desired
     goto WALK_MULTIPLAYER;
 
 WALK_MULTIPLAYER:
       SDL_Delay(5);
-
-
       switch (get_event()) {
       //Control Player 1
       case SDLK_UP:   dx=0; dy=-1; break;
@@ -492,7 +470,6 @@ WALK_MULTIPLAYER:
     x=x+dx; y=y+dy;
     x1=x1+dx1; y1=y1+dy1;
 
-
     //If players cross red or green lines
     if (point[x][y] == 3) goto END_MULTIPLAYER;
     if (point[x][y] == 2) goto END_MULTIPLAYER;
@@ -508,7 +485,6 @@ WALK_MULTIPLAYER:
     pset(x, y, 3);
     pset(x1, y1, 2);
     update_screen();
- 
     goto WALK_MULTIPLAYER;
 
 END_MULTIPLAYER:
@@ -526,13 +502,18 @@ END_MULTIPLAYER:
 
 END_SOLOPLAYER:
     contour(0);
-    
+    inser=0;  
     suppression(maListe);
     lire(maListe);
-    insertion(maListe,"antoine", pts);
-    ecrire(maListe);
+    //insertion(maListe,"antoine", pts);
+    draw_score_final(maListe,pts);
+    if (inser==1)
+    {
+      insertion(maListe,chaine, pts);
+      ecrire(maListe);
+      tour++; goto MENU;
+    }
 
-    draw_score_final(pts);
     update_screen();
 
     while (get_event()) {}  // empty the event queue
@@ -541,7 +522,7 @@ END_SOLOPLAYER:
       switch (get_event()) {
         case SDLK_p:
         case SDLK_RETURN:
-        case SDLK_SPACE:  goto NEWGAME_SOLOPLAYER;
+        case SDLK_SPACE: goto NEWGAME_SOLOPLAYER;
         case SDLK_ESCAPE: tour++; goto MENU;
         case SDL_QUIT: goto CLOSE;
       }
@@ -550,7 +531,6 @@ END_SOLOPLAYER:
 CLOSE:
     //TTF_CloseFont(police); /* Permet de femer la police, Doit être avant TTF_Quit() */
     TTF_Quit();
-
     SDL_FreeSurface(texte);
     SDL_Quit();
     return 0;
