@@ -10,16 +10,14 @@ static Uint32 colors_rgb[4];
 //Definie un tableau des dimensions de l'ecran pour y inscrire chaque couleur de chaque pixels
 static char point[1280][720];
 //Variables player 1                      //Variables player 2                  //Variables score                   //variables menu              
-static int x=140, y=90, dx=1, dy=0, pts=0, x1=160, y1=90, dx1=1, dy1=0, pts1=0, tempsActuel = 0, tempsPrecedent = 0, pointeur = 0, tour=0, check = 0, winner = 0, inser=0;
+static int x=140, y=90, dx=1, dy=0, pts=0, x1=160, y1=90, dx1=1, dy1=0, pts1=0, tempsActuel = 0, tempsPrecedent = 0, pointeur = 0, tour=0, check = 0, winner = 0, inser=0, speed=2, difficulty=2;
 static char score[80] = {""}; /* Tableau de char suffisamment grand */ 
 static char strn[80] = {""}; /* Tableau de char suffisamment grand */ 
 static char chaine[80] = {""};
-
-
-//Variable pour police SDL_tff
-TTF_Font *police = NULL;
 static SDL_Event event;
+TTF_Font *police = NULL; //Variable pour police SDL_tff
 
+//fonction pour recuperer touche appuyé
 int get_event () {
   if (SDL_PollEvent(&event)) {        // If there's an event to handle
     if (event.type == SDL_KEYDOWN)    // If a key was pressed
@@ -182,7 +180,6 @@ int main( int argc, char* args[] ) {
     goto MENU;
 
 MENU:
-
       contour(0);     //Definie les contour pour l'affichage sans score 
       while (get_event()) {}  // empty the event queue
       while (1) {
@@ -245,7 +242,7 @@ tour=0;
     case SDLK_RETURN: if (pointeur==0)goto NEWGAME_MULTIPLAYER;
                       if (pointeur==1)goto NEWGAME_SOLOPLAYER;
                       if (pointeur==2)goto SCORES;
-                      if (pointeur==2)goto SETTINGS;
+                      if (pointeur==3)goto SETTINGS;
                       if (pointeur==4)goto CLOSE;
                       break;
     //case SDLK_SPACE: 
@@ -258,6 +255,49 @@ tour=0;
     }
 
 SETTINGS:
+
+contour(0); //dessine les contours sans afficher le score
+while (get_event()) {}  // empty the event queue
+while (1) 
+{
+      if(pointeur>1)pointeur=0;if(pointeur<0)pointeur=1;if(speed>3)speed=3;if(speed<1)speed=1;if(difficulty>3)difficulty=3;if(difficulty<1)difficulty=1;
+      if(pointeur==0){  
+         sprintf(strn, "Settings"); draw_text(450,100,40,strn,1);
+         sprintf(strn, "Speed"); draw_text(330,280,25,strn,1);
+            if (speed == 3){sprintf(strn, "<- FAST"); draw_text(650,280,25,strn,2);}
+            if (speed == 2){sprintf(strn, "<- MEDIUM ->"); draw_text(650,280,25,strn,2);}
+            if (speed == 1){sprintf(strn, "SLOW ->"); draw_text(650,280,25,strn,2);}
+         sprintf(strn, "Difficullty"); draw_text(330,380,25,strn,1);
+            if (difficulty == 3){sprintf(strn, "HARD"); draw_text(650,380,25,strn,1);}
+            if (difficulty == 2){sprintf(strn, "NORMAL"); draw_text(650,380,25,strn,1);}
+            if (difficulty == 1){sprintf(strn, "EASY"); draw_text(650,380,25,strn,1);}
+      }
+      if(pointeur==1){  
+         sprintf(strn, "Settings"); draw_text(450,100,40,strn,1);
+         sprintf(strn, "Speed"); draw_text(330,280,25,strn,1);
+            if (speed == 3){sprintf(strn, "FAST"); draw_text(650,280,25,strn,1);}
+            if (speed == 2){sprintf(strn, "MEDIUM"); draw_text(650,280,25,strn,1);}
+            if (speed == 1){sprintf(strn, "SLOW"); draw_text(650,280,25,strn,1);}
+         sprintf(strn, "Difficullty"); draw_text(330,380,25,strn,1);
+            if (difficulty == 3){sprintf(strn, "<- HARD"); draw_text(650,380,25,strn,2);}
+            if (difficulty == 2){sprintf(strn, "<- NORMAL ->"); draw_text(650,380,25,strn,2);}
+            if (difficulty == 1){sprintf(strn, "EASY ->"); draw_text(650,380,25,strn,2);}
+      }
+
+
+
+  switch (get_event()) {
+    case SDLK_UP: pointeur --; goto SETTINGS;
+    case SDLK_DOWN: pointeur ++; goto SETTINGS;
+    case SDLK_RIGHT: if(pointeur==0)speed++; if(pointeur==1)difficulty++; goto SETTINGS;
+    case SDLK_LEFT: if(pointeur==0)speed--; if(pointeur==1)difficulty--; goto SETTINGS;
+        case SDLK_RETURN: goto MENU;
+        case SDLK_ESCAPE: goto MENU;
+        case SDL_QUIT: goto CLOSE;
+  }
+    update_screen();
+    SDL_Delay(50);
+}
 
 SCORES:
     
@@ -272,7 +312,7 @@ while (get_event()) {}  // empty the event queue
 while (1) 
 {
   //////////Liste chainée
-sprintf(strn, "Meilleurs Scores"); draw_text(300,100,40,strn,1);
+sprintf(strn, "Best Scores"); draw_text(380,100,40,strn,1);
     //insertion(maListe,name, score);
 
 
@@ -317,6 +357,10 @@ NEWGAME_SOLOPLAYER:
 
 WALK_SOLOPLAYER:
 
+      if (speed==1){SDL_Delay(10);}
+      if (speed==2){SDL_Delay(7);}
+      if (speed==3){SDL_Delay(4);}
+      
       check=0;
       switch (get_event()) {
       //Control Player 1
@@ -418,7 +462,7 @@ WALK_SOLOPLAYER:
     x1=x1+dx1; y1=y1+dy1;
 
     //If players cross red or green lines
-    if (point[x][y] == 3){winner=2; goto END_SOLOPLAYER;    } 
+    if (point[x][y] == 3){winner=2; goto END_SOLOPLAYER;} 
     if (point[x][y] == 2) {winner=2; goto END_SOLOPLAYER;} 
     if (point[x1][y1] == 3) {winner=1; goto END_SOLOPLAYER;} 
     if (point[x1][y1] == 2) {winner=1; goto END_SOLOPLAYER;} 
@@ -430,9 +474,7 @@ WALK_SOLOPLAYER:
     draw_score(pts);
     pset(x, y, 3);
     pset(x1, y1, 2);
-    update_screen();
-    SDL_Delay(4);
- 
+    update_screen(); 
     goto WALK_SOLOPLAYER;
 
 
@@ -449,7 +491,11 @@ NEWGAME_MULTIPLAYER:
     goto WALK_MULTIPLAYER;
 
 WALK_MULTIPLAYER:
-      SDL_Delay(5);
+
+      if (speed==1){SDL_Delay(10);}
+      if (speed==2){SDL_Delay(7);}
+      if (speed==3){SDL_Delay(4);}
+
       switch (get_event()) {
       //Control Player 1
       case SDLK_UP:   dx=0; dy=-1; break;
