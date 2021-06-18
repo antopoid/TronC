@@ -2,8 +2,8 @@ NEWGAME_MULTIPLAYER:
     contour(1);//Definie les contour pour l'affichage du score 
     x=330; y=180; dx=1; dy=0; pts=0;    //Spwan player 1
     pset(x, y, 3);
-    x1=310; y1=180; dx1=-1; dy1=0; pts1=0;    //Spawn player 2 
-    pset(x1, y1, 2); 
+    x_1=310; y_1=180; dx1=-1; dy1=0; pts1=0;    //Spawn player 2 
+    pset(x_1, y_1, 2); 
     draw_green_square(); //Draw breen square
     update_screen();     //Refresh screen
     SDL_Delay(100); //Add delay
@@ -34,22 +34,22 @@ WALK_MULTIPLAYER:
     
     //Add direction to cursor to make it move 
     x=x+dx; y=y+dy;
-    x1=x1+dx1; y1=y1+dy1;
+    x_1=x_1+dx1; y_1=y_1+y_1;
 
     //If players cross red or green lines
     if (point[x][y] == 3) goto END_MULTIPLAYER;
     if (point[x][y] == 2) goto END_MULTIPLAYER;
-    if (point[x1][y1] == 3) goto END_MULTIPLAYER;
-    if (point[x1][y1] == 2) goto END_MULTIPLAYER;
+    if (point[x_1][y_1] == 3) goto END_MULTIPLAYER;
+    if (point[x_1][y_1] == 2) goto END_MULTIPLAYER;
     //If player one hit green pixel
     if (point[x][y] == 1) hit_green_pixel();
-    if (point[x1][y1] == 1) hit_green_pixel();
+    if (point[x_1][y_1] == 1) hit_green_pixel();
     //If player two hit green pixel
     //if (point1[x1][y1] == 1) hit_green_pixel();
     pts++;
     draw_score(pts);
     pset(x, y, 3);
-    pset(x1, y1, 2);
+    pset(x_1, y_1, 2);
     update_screen();
     goto WALK_MULTIPLAYER;
 

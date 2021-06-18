@@ -61,9 +61,9 @@ sprintf(strn, "RIGHT"); draw_text(900,340,18,strn,3);
 
 sprintf(strn, "Player 2 Controls"); draw_text(680,470,25,strn,3);
 sprintf(strn, "Z"); draw_text(880,530,18,strn,3);
-sprintf(strn, "S"); draw_text(880,630,18,strn,3);
+sprintf(strn, "S"); draw_text(880,610,18,strn,3);
 sprintf(strn, "Q"); draw_text(830,560,18,strn,3);
-sprintf(strn, "D"); draw_text(910,560,18,strn,3);  
+sprintf(strn, "D"); draw_text(930,560,18,strn,3);  
 
   switch (get_event()) {
     case SDLK_UP: pointeur --; tour++; goto MENU;

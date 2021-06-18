@@ -1,110 +1,108 @@
 NEWGAME_SOLOPLAYER:
-    //Definie les contour pour l'affichage du score 
+      //Definie les contour pour l'affichage du score 
     contour(1);
     //Spwan player 1
-    x=330; y=180; dx=1; dy=0; pts=0;
-    pset(x, y, 3);
+    x = 330;
+    y = 180;
+    dx = 1;
+    dy = 0;
+    pts = 0;
+    pset(x, y, PLAYER_ONE_COLOR);
     //Spawn IA
-    x1=310; y1=170; dx1=1; dy1=0; pts1=0;
-    pset(x1, y1, 2); 
+    x_1 = 310;
+    y_1 = 170;
+    dx1 = 1;
+    dy1 = 0;
+    pts1 = 0;
+    pset(x_1, y_1, PLAYER_TWO_COLOR);
     draw_green_square();
     //Rafraichie écran
     update_screen();
-    SDL_Delay(20);
+    SDL_Delay(100);
     //Met la police en petit pour le score 
-    police = TTF_OpenFont("./ttf/TRON.ttf", 25);
-    //draw_grille(); //Dessine une grille grise dans le fond de l'ecran
+    police = TTF_OpenFont("./TRON.ttf", 25);
     goto WALK_SOLOPLAYER;
 
-WALK_SOLOPLAYER:
+    WALK_SOLOPLAYER:
 
-      if (speed==1){SDL_Delay(10);}
-      if (speed==2){SDL_Delay(7);}
-      if (speed==3){SDL_Delay(4);}
-      
-      check=0;
-      switch (get_event()) {
-      //Control Player 1
-      case SDLK_UP:   dx=0; dy=-1; break;
-      case SDLK_DOWN: dx=0; dy=1; break;
-      case SDLK_LEFT: dx=-1; dy=0; break;
-      case SDLK_RIGHT: dx=1; dy=0; break;
-      //Other control
-      case SDLK_ESCAPE: goto END_SOLOPLAYER;
-      case SDL_QUIT: goto CLOSE;
-      }
+    if (speed == 1) { SDL_Delay(10); }
+    if (speed == 2) { SDL_Delay(7); }
+    if (speed == 3) { SDL_Delay(4); }
 
-      //Si IA vers la droite
-      if(dx1==1 && dy1==0 && check==0){
-      if (point[x1+4][y1]!=0 || point[x1+8][y1]!=0 ){
-        dx1=0; dy1=1;
-        check=1;
-        if (point[x1][y1+4] != 0 ){
-          dx1=0; dy1=-1;
-        }
-        if (point[x1][y1-4] != 0 ){
-          dx1=0; dy1=1;
-        }
-       }
-      }
-      //Si IA vers la gauche
-      if(dx1==-1 && dy1==0 && check==0){
-      if (point[x1-4][y1] != 0 ){
-        dx1=0; dy1=1;
-        check=1;
-        if (point[x1][y1+4] != 0 ){
-          dx1=0; dy1=-1;
-        }
-        if (point[x1][y1-4] != 0 ){
-          dx1=0; dy1=1;
-        }
-       }
-      }
-      //Si IA vers le bas
-      if(dx1==0 && dy1==1 && check==0){
-      if (point[x1][y1+4] != 0 ){
-        dx1=1; dy1=0;
-        check=1;
-        if (point[x1+4][y1] != 0 ){
-          dx1=-1; dy1=0;
-        }
-        if (point[x1-4][y1] != 0 ){
-          dx1=1; dy1=0;
-        }
-       }
-      }
-      //Si IA vers le haut
-      if(dx1==0 && dy1==-1 && check==0){
-      if (point[x1][y1-4] != 0 ){
-        dx1=1; dy1=0;
-        check=1;
-        if (point[x1+4][y1] != 0 ){
-          dx1=-1; dy1=0;
-         }
-        if (point[x1-4][y1] != 0 ){
-          dx1=1; dy1=0;
-        }
-       }
-      }
+    check = 0;
+    switch (get_event()) {
+        //Control Player 1
+        case SDLK_UP:
+            dx = 0;
+            dy = -1;
+            break;
+        case SDLK_DOWN:
+            dx = 0;
+            dy = 1;
+            break;
+        case SDLK_LEFT:
+            dx = -1;
+            dy = 0;
+            break;
+        case SDLK_RIGHT:
+            dx = 1;
+            dy = 0;
+            break;
+            //Other control
+        case SDLK_ESCAPE:
+            goto END_SOLOPLAYER;
+        case SDL_QUIT:
+            goto CLOSE;
+    }
+
+    switch (difficulty) {
+        case 1:
+            move_ai_easy();
+            break;
+        case 3:
+            move_ai_hard();
+            break;
+        case 2:
+        default:
+            move_ai_normal();
+            break;
+    }
+
+    //printf("x:%d y:%d x_1:%d y_1:%d x-x_1:%d y-y_1:%d\n",x,y,x_1,y_1,x-x_1,y-y_1);
 
     //Add direction to cursor to make it move 
-    x=x+dx; y=y+dy;
-    x1=x1+dx1; y1=y1+dy1;
+    x = x + dx;
+    y = y + dy;
+    x_1 = x_1 + dx1;
+    y_1 = y_1 + dy1;
 
     //If players cross red or green lines
-    if (point[x][y] == 3){winner=2; goto END_SOLOPLAYER;} 
-    if (point[x][y] == 2) {winner=2; goto END_SOLOPLAYER;} 
-    if (point[x1][y1] == 3) {winner=1; goto END_SOLOPLAYER;} 
-    if (point[x1][y1] == 2) {winner=1; goto END_SOLOPLAYER;} 
-        //If player one hit green pixel
-    if (point[x][y] == 1) hit_green_pixel();
-    if (point[x1][y1] == 1) hit_green_pixel();
+    if (point[x][y] == PLAYER_ONE_COLOR) {
+        winner = 2;
+        goto END_SOLOPLAYER;
+    }
+    if (point[x][y] == PLAYER_TWO_COLOR) {
+        winner = 2;
+        goto END_SOLOPLAYER;
+    }
+    if (point[x_1][y_1] == PLAYER_ONE_COLOR) {
+        winner = 1;
+        goto END_SOLOPLAYER;
+    }
+    if (point[x_1][y_1] == PLAYER_TWO_COLOR) {
+        winner = 1;
+        goto END_SOLOPLAYER;
+    }
+    //If player one hit green pixel
+    if (point[x][y] == GREEN_SQUARE_COLOR) hit_green_pixel();
+    if (point[x_1][y_1] == GREEN_SQUARE_COLOR) hit_green_pixel();
 
     pts++;
     draw_score(pts);
-    pset(x, y, 3);
-    pset(x1, y1, 2);
-    update_screen(); 
+    pset(x, y, PLAYER_ONE_COLOR);
+    pset(x_1, y_1, PLAYER_TWO_COLOR);
+    update_screen();
+
     goto WALK_SOLOPLAYER;
     
 END_SOLOPLAYER:
