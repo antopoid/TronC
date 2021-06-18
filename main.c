@@ -59,6 +59,9 @@ int main( int argc, char* args[] ) {
         fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
         exit(EXIT_FAILURE);
     }
+    fichier=fopen("data/settings.txt","r");
+    fscanf(fichier,"%d %d %d",&speed ,&difficulty, &bonus);
+    fclose(fichier);
 
     //Initialise les differentes couleurs utilisées pour les pixels
     colors_rgb[0] = SDL_MapRGB(screen->format, 0,    0,   0);

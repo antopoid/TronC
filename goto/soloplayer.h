@@ -25,6 +25,7 @@ NEWGAME_SOLOPLAYER:
 
     WALK_SOLOPLAYER:
 
+    //definie la vitesse du jeu (en ms), chaque rafraichissement d'image est plus ou moins espacé 
     if (speed == 1) { SDL_Delay(10); }
     if (speed == 2) { SDL_Delay(7); }
     if (speed == 3) { SDL_Delay(4); }
@@ -68,7 +69,7 @@ NEWGAME_SOLOPLAYER:
             break;
     }
 
-    //printf("x:%d y:%d x_1:%d y_1:%d x-x_1:%d y-y_1:%d\n",x,y,x_1,y_1,x-x_1,y-y_1);
+    //printf("x:%d y:%d x_1:%d y_1:%d x-x_1:%d y-y_1:%d\n",x,y,x_1,y_1,x-x_1,y-y_1); //code permettant le debugage de l'IA
 
     //Add direction to cursor to make it move 
     x = x + dx;
@@ -98,25 +99,24 @@ NEWGAME_SOLOPLAYER:
     if (point[x_1][y_1] == GREEN_SQUARE_COLOR) hit_green_pixel();
 
     pts++;
-    draw_score(pts);
-    pset(x, y, PLAYER_ONE_COLOR);
-    pset(x_1, y_1, PLAYER_TWO_COLOR);
-    update_screen();
+    draw_score(pts); //Dessine le score en bas 
+    pset(x, y, PLAYER_ONE_COLOR); //Dessine le joueur 1
+    pset(x_1, y_1, PLAYER_TWO_COLOR); //Dessine l'IA
+    update_screen(); //rafraichie l'ecran
 
-    goto WALK_SOLOPLAYER;
+    goto WALK_SOLOPLAYER; //Boucle 
     
 END_SOLOPLAYER:
     contour(0);
     inser=0;  
-    suppression(maListe);
-    lire(maListe);
-    //insertion(maListe,"antoine", pts);
-    draw_score_final(maListe,pts);
+    suppression(maListe); //Efface la liste chainée contenue dans la memoire temporaire 
+    lire(maListe); //lit les noms et score contenue dans le fichier scores .txt
+    draw_score_final(maListe,pts); //Dessine l'affichage du score final pour entre son pseudo
     if (inser==1)
     {
-      insertion(maListe,chaine, pts);
-      ecrire(maListe);
-      tour++; goto MENU;
+      insertion(maListe,chaine, pts);//Rajoute le nom et score dans la liste chainée
+      ecrire(maListe);//ecrit la liste dans le fichier score.txt
+      tour++; goto MENU;//retour au menu
     }
 
     update_screen();

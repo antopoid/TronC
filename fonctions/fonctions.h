@@ -59,9 +59,9 @@ void draw_score (int pts) {
 
 //fonction pour afficher score fianl sous forme de popup
 void draw_score_final (Liste *liste, int pts) {
-    SDL_EnableUNICODE(SDL_ENABLE);
+    SDL_EnableUNICODE(SDL_ENABLE); //active le dechifrage des carracteres ascii grace à unicode
     int i=0, j=0;
-    memset(chaine, 0, 80);
+    memset(chaine, 0, 80); //permet de remplir le tableau de 0
     SDL_Color couleurCyan = {120, 239, 252};
     SDL_Color couleurNoir = {0, 0, 0};
     //Definie le fond en noir 
@@ -71,10 +71,9 @@ void draw_score_final (Liste *liste, int pts) {
     //Barre gauche et droite 
     for (j=150; j<=200; ++j) { pset(170, j, 3); pset(470, j, 3); }  
     
-    SDL_Rect position;
+    SDL_Rect position; //definie les positions de l'ecriture
             position.x = 670;
             position.y = 328;
-
             sprintf(score, "Score : %d", pts); /* On écrit dans la chaîne le nouveau score */
             texte = TTF_RenderText_Shaded(police, score, couleurCyan, couleurNoir); /* On écrit la chaine temps dans la SDL_Surface */
 
@@ -85,11 +84,11 @@ void draw_score_final (Liste *liste, int pts) {
  
     SDL_WaitEvent(&event);
     
-    if(event.key.keysym.unicode >= 'a' && event.key.keysym.unicode <= 'z') {strcat(chaine,SDL_GetKeyName(event.key.keysym.unicode));i++;}
-    else if(event.key.keysym.unicode >= 'A' && event.key.keysym.unicode <= 'Z') {strcat(chaine,SDL_GetKeyName(event.key.keysym.unicode));i++;}
-    else if(event.key.keysym.sym == SDLK_RETURN) {inser=1;break;}
-    else if(event.key.keysym.sym == SDLK_ESCAPE) {inser=1;break;}
-    else if(event.key.keysym.sym == SDL_QUIT) {inser=1;break;}
+    if(event.key.keysym.unicode >= 'a' && event.key.keysym.unicode <= 'z') {strcat(chaine,SDL_GetKeyName(event.key.keysym.unicode));i++;} //recupere les touches appuyé entre a et z
+    else if(event.key.keysym.unicode >= 'A' && event.key.keysym.unicode <= 'Z') {strcat(chaine,SDL_GetKeyName(event.key.keysym.unicode));i++;} //recupere les touches appuyé entre A et Z
+    else if(event.key.keysym.sym == SDLK_RETURN) {inser=1;break;} //si la touche appuyé est entrée on insert dans la liste chainée
+    else if(event.key.keysym.sym == SDLK_ESCAPE) {inser=1;break;} //si la touche appuyé est echap alors on insert et retour au menu
+    else if(event.key.keysym.sym == SDL_QUIT) {inser=1;break;} //si la touche appuyé la croix alors on insert et quit
     texte = TTF_RenderText_Blended(police, chaine, couleurCyan);
     SDL_Rect position;
     position.x = 360;
@@ -121,6 +120,7 @@ void contour (int Affscore) {
     for (j=0; j<=360; ++j) { pset(0, j, 3); pset(639, j, 3); }
 }
 
+//fonction pour dessiner la grille (pas encore implementé)
 void draw_grille (){
   for (int j = 10; j < 320; j=j+10)
   {
@@ -149,7 +149,7 @@ void draw_text (int x, int y, int size, char strn[],int clr) {
     TTF_CloseFont(police); //Ferme la police
 }
 double calculate_distance_to_player(int x1, int y1, int x2, int y2) {
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); //calcul de l'hypothenuse entre le joueur et l'IA grace au theoreme de pythagore (distance joueur - IA)
 }
 
 // La direction est modifiée par le biais des pointeurs
@@ -189,6 +189,7 @@ void set_next_direction(int x, int y, int *dx, int *dy, int new_dx, int new_dy) 
     }
 }
 
+//Mode facile de l'IA
 void move_ai_easy() {
     //Si IA vers la droite
     if (dx1 == 1 && dy1 == 0 && check == 0) {
@@ -256,6 +257,7 @@ void move_ai_easy() {
     }
 }
 
+//Mode normal de l'IA
 void move_ai_normal() {
     direction_t direction;
 
@@ -263,7 +265,7 @@ void move_ai_normal() {
     if (rand() < RAND_MAX / 100) {
         // Entre 0 et 3, choisis une direction parmi celles possibles
         do {
-            direction = possibleDirections[rand() % 4];
+            direction = possibleDirections[rand() % 4]; //Ajoute un coté impredictible a l'IA (random)
         } while (direction.x == dx1 && direction.y == dy1);
 
         set_next_direction(x_1, y_1, &dx1, &dy1, direction.x, direction.y);
@@ -335,6 +337,7 @@ void move_ai_normal() {
     }
 }
 
+//Mode hard de l'IA ( l'ia colle le joueur et reste tres agressive)
 void move_ai_hard() {
     last_distance = current_distance;
     current_distance = (int) calculate_distance_to_player(x, y, x_1, y_1);
@@ -344,7 +347,6 @@ void move_ai_hard() {
         // Le prochain pixel est libre
         if (point[x_1 + dx][y_1 + dy] == EMPTY_SQUARE) {
             // L'IA suit la direction du joueur
-
             set_next_direction(x_1, y_1, &dx1, &dy1, dx, dy);
             check = 1;
         }

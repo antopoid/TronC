@@ -12,8 +12,6 @@ while (1)
 {
   //////////Liste chainée
 sprintf(strn, "Best Scores"); draw_text(380,100,40,strn,1);
-    //insertion(maListe,name, score);
-
 
     while (actuel != NULL && nbScore<=6)
     {
@@ -22,10 +20,7 @@ sprintf(strn, "Best Scores"); draw_text(380,100,40,strn,1);
         height=height+100;
         nbScore ++;
     }
-    /*while (actuel->suivant != NULL)
-    {
-      suppression(maListe);
-    }*/
+
   /////////fin liste chainée
 
   switch (get_event()) {

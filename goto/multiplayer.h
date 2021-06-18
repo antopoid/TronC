@@ -11,7 +11,6 @@ NEWGAME_MULTIPLAYER:
     goto WALK_MULTIPLAYER;
 
 WALK_MULTIPLAYER:
-
       if (speed==1){SDL_Delay(10);}
       if (speed==2){SDL_Delay(7);}
       if (speed==3){SDL_Delay(4);}
@@ -34,9 +33,9 @@ WALK_MULTIPLAYER:
     
     //Add direction to cursor to make it move 
     x=x+dx; y=y+dy;
-    x_1=x_1+dx1; y_1=y_1+y_1;
+    x_1=x_1+dx1; y_1=y_1+dy1;
 
-    //If players cross red or green lines
+    //If players cross red or blue lines
     if (point[x][y] == 3) goto END_MULTIPLAYER;
     if (point[x][y] == 2) goto END_MULTIPLAYER;
     if (point[x_1][y_1] == 3) goto END_MULTIPLAYER;
@@ -45,21 +44,19 @@ WALK_MULTIPLAYER:
     if (point[x][y] == 1) hit_green_pixel();
     if (point[x_1][y_1] == 1) hit_green_pixel();
     //If player two hit green pixel
-    //if (point1[x1][y1] == 1) hit_green_pixel();
     pts++;
     draw_score(pts);
     pset(x, y, 3);
     pset(x_1, y_1, 2);
     update_screen();
+ 
     goto WALK_MULTIPLAYER;
 
 END_MULTIPLAYER:
-
     contour(0);
     inser=0;  
     suppression(maListe);
     lire(maListe);
-    //insertion(maListe,"antoine", pts);
     draw_score_final(maListe,pts);
     if (inser==1)
     {
