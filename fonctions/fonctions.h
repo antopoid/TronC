@@ -136,9 +136,11 @@ void draw_grille (){
 void draw_text (int x, int y, int size, char strn[],int clr) {
     SDL_Color couleurCyan = {120, 239, 252};
     SDL_Color couleurRouge = {211, 44, 31};
+    SDL_Color couleurVert = {0, 255, 0};
     //chercher fonction changement taille
     police = TTF_OpenFont("./ttf/TRON.ttf", size); // Chargement de la police 
-    if(clr==1)texte = TTF_RenderText_Blended(police, strn, couleurCyan); // Écriture du texte dans la SDL_Surface texte en mode Blended (optimal) 
+    if(clr==1)texte = TTF_RenderText_Blended(police, strn, couleurCyan); // Écriture du texte dans la SDL_Surface texte en mode Blended (optimal)
+    if(clr==3)texte = TTF_RenderText_Blended(police, strn, couleurVert); // Écriture du texte dans la SDL_Surface texte en mode Blended (optimal)
     if(clr==2)texte = TTF_RenderText_Blended(police, strn, couleurRouge); // Écriture du texte dans la SDL_Surface texte en mode Blended (optimal)
     SDL_Rect position;
     position.x = x;

@@ -53,17 +53,17 @@ if(pointeur==4){
               }
 tour=0;
 } 
-sprintf(strn, "Player 1 Controls"); draw_text(700,300,25,strn,1);
-sprintf(strn, "UP"); draw_text(800,330,18,strn,1);
-sprintf(strn, "DOWN"); draw_text(800,430,18,strn,1);
-sprintf(strn, "LEFT"); draw_text(750,380,18,strn,1);
-sprintf(strn, "RIGHT"); draw_text(850,380,18,strn,1);
+sprintf(strn, "Player 1 Controls"); draw_text(680,230,25,strn,3);
+sprintf(strn, "UP"); draw_text(850,290,18,strn,3);
+sprintf(strn, "DOWN"); draw_text(850,390,18,strn,3);
+sprintf(strn, "LEFT"); draw_text(800,340,18,strn,3);
+sprintf(strn, "RIGHT"); draw_text(900,340,18,strn,3);
 
-sprintf(strn, "Player 2 Controls"); draw_text(800,570,25,strn,1);
-sprintf(strn, "Z"); draw_text(800,600,18,strn,1);
-sprintf(strn, "S"); draw_text(800,600,18,strn,1);
-sprintf(strn, "Q"); draw_text(7700,600,18,strn,1);
-sprintf(strn, "D"); draw_text(830,600,18,strn,1);  
+sprintf(strn, "Player 2 Controls"); draw_text(680,470,25,strn,3);
+sprintf(strn, "Z"); draw_text(880,530,18,strn,3);
+sprintf(strn, "S"); draw_text(880,630,18,strn,3);
+sprintf(strn, "Q"); draw_text(830,560,18,strn,3);
+sprintf(strn, "D"); draw_text(910,560,18,strn,3);  
 
   switch (get_event()) {
     case SDLK_UP: pointeur --; tour++; goto MENU;
